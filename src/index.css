@@ -1,0 +1,55 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  
+  --color-brand-bg: #F8F2E9;
+  --color-brand-secondary: #FFFDF8;
+  --color-brand-card: #FFFFFF;
+  --color-brand-text: #171717;
+  --color-brand-muted: #6B6B6B;
+  --color-brand-gold: #C89A3C;
+  --color-brand-border: #E8DDC9;
+  --color-brand-success: #3F8C5A;
+  --color-brand-warning: #C28A2E;
+  --color-brand-error: #C94949;
+}
+
+body {
+  background-color: #F8F2E9;
+  color: #171717;
+  font-family: var(--font-sans);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Luxury scientific styles */
+.scientific-grid {
+  background-image: radial-gradient(#E8DDC9 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Premium card hover */
+.card-hover-luxury {
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.card-hover-luxury:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px -10px rgba(200, 154, 60, 0.12);
+  border-color: #C89A3C;
+}
+

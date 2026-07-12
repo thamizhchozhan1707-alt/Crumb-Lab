@@ -1,0 +1,6 @@
+{
+  "name": "CrumbLab R&D Lab",
+  "description": "Premium internal research and development platform for functional cookie crafting.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,124 @@
+{
+  "entities": {
+    "Ingredient": {
+      "title": "Ingredient",
+      "description": "Represents a raw culinary/biochemical agent in inventory",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique identifier of the ingredient" },
+        "name": { "type": "string", "description": "Display name of the ingredient" },
+        "category": { "type": "string", "description": "Ingredient grouping category" },
+        "stock": { "type": "number", "description": "Current quantity in stock" },
+        "unit": { "type": "string", "description": "Measurement unit (e.g. g, ml, units)" },
+        "unitCost": { "type": "number", "description": "Unit cost in dollars" },
+        "supplier": { "type": "string", "description": "Supplier brand or manufacturer" },
+        "minStock": { "type": "number", "description": "Reorder safety threshold" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "ISO timestamp of last update" }
+      },
+      "required": ["id", "name", "category", "stock", "unit", "unitCost", "supplier", "minStock", "updatedAt"]
+    },
+    "Recipe": {
+      "title": "Recipe",
+      "description": "Represents a functional cookie formula version",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique recipe formulation identifier" },
+        "name": { "type": "string", "description": "Display title of recipe" },
+        "version": { "type": "number", "description": "Formulation version increment" },
+        "category": { "type": "string", "description": "Functional/medical goal classification" },
+        "ingredients": { "type": "array", "description": "Array of referenced ingredients with quantities" },
+        "instructions": { "type": "string", "description": "Baking guidelines and protocol steps" },
+        "tempF": { "type": "number", "description": "Baking temperature in Fahrenheit" },
+        "timeMins": { "type": "number", "description": "Baking duration in minutes" },
+        "textureAnalysis": { "type": "string", "description": "Sensory textural notes" },
+        "tasteRating": { "type": "number", "description": "Sensory flavor rating (1-5)" },
+        "costPerCookie": { "type": "number", "description": "Calculated raw ingredient cost per unit" },
+        "notes": { "type": "string", "description": "Therapeutic R&D logs or design notes" },
+        "imageUrl": { "type": "string", "description": "Firebase Storage or fallback URL of cookie photo" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "ISO timestamp of creation" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "ISO timestamp of last formula update" },
+        "updatedBy": { "type": "string", "description": "Scientist email or username" },
+        "history": { "type": "array", "description": "Past version control logs" }
+      },
+      "required": ["id", "name", "version", "category", "ingredients", "instructions", "tempF", "timeMins", "textureAnalysis", "tasteRating", "costPerCookie", "notes", "createdAt", "updatedAt", "updatedBy"]
+    },
+    "Experiment": {
+      "title": "Experiment",
+      "description": "An empirical testing journal entry evaluating changes",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique experiment ID" },
+        "recipeId": { "type": "string", "description": "Associated recipe formulation ID" },
+        "recipeName": { "type": "string", "description": "Name of associated recipe" },
+        "title": { "type": "string", "description": "Purpose/Title of experiment" },
+        "date": { "type": "string", "description": "Baking date YYYY-MM-DD" },
+        "variablesChanged": { "type": "string", "description": "Biochemical variables adjusted" },
+        "bakingTemp": { "type": "number", "description": "Baking temperature in Fahrenheit" },
+        "bakingTime": { "type": "number", "description": "Baking duration in minutes" },
+        "observations": { "type": "string", "description": "Sensory and physical notes" },
+        "textureRating": { "type": "number", "description": "Textural score (1-5)" },
+        "tasteRating": { "type": "number", "description": "Flavor score (1-5)" },
+        "costPerCookie": { "type": "number", "description": "Simulated raw material cost" },
+        "status": { "type": "string", "description": "Resulting classification" },
+        "createdBy": { "type": "string", "description": "Scientist email" },
+        "imageUrl": { "type": "string", "description": "Optional media attached to report" },
+        "recipeVersion": { "type": "number", "description": "Recipe formulation version number" },
+        "expectedResult": { "type": "string", "description": "Expected outcome of the experiment" },
+        "actualResult": { "type": "string", "description": "Actual observed outcome" },
+        "notes": { "type": "string", "description": "Additional experimental or design notes" }
+      },
+      "required": ["id", "recipeId", "recipeName", "title", "date", "variablesChanged", "bakingTemp", "bakingTime", "observations", "textureRating", "tasteRating", "costPerCookie", "status", "createdBy"]
+    },
+    "InventoryLog": {
+      "title": "InventoryLog",
+      "description": "Tracks stock changes or transaction logs",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique transaction log ID" },
+        "ingredientId": { "type": "string", "description": "Target ingredient ID" },
+        "ingredientName": { "type": "string", "description": "Target ingredient name" },
+        "changeAmount": { "type": "number", "description": "Refill or usage amount" },
+        "actionType": { "type": "string", "description": "Type of event (replenish/consume)" },
+        "timestamp": { "type": "string", "format": "date-time", "description": "ISO timestamp of transaction" },
+        "performedBy": { "type": "string", "description": "Email of scientist who logged action" },
+        "notes": { "type": "string", "description": "Reason or invoice notes" }
+      },
+      "required": ["id", "ingredientId", "ingredientName", "changeAmount", "actionType", "timestamp", "performedBy"]
+    },
+    "User": {
+      "title": "User",
+      "description": "Represents research personnel with system roles",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "User UID" },
+        "email": { "type": "string", "description": "Registered academic email" },
+        "role": { "type": "string", "description": "Role tier (Principal, Associate, Guest)" },
+        "displayName": { "type": "string", "description": "Full display name" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Account registration date" }
+      },
+      "required": ["id", "email", "role", "displayName", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/ingredients/{ingredientId}": {
+      "schema": "Ingredient",
+      "description": "Central registry of food ingredients and active components"
+    },
+    "/recipes/{recipeId}": {
+      "schema": "Recipe",
+      "description": "Functional cookie master recipes"
+    },
+    "/experiments/{experimentId}": {
+      "schema": "Experiment",
+      "description": "Scientific test bake log journal entries"
+    },
+    "/inventory/{logId}": {
+      "schema": "InventoryLog",
+      "description": "Historical audit log of ingredient stock transactions"
+    },
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Authorized laboratory researchers and user profile settings"
+    }
+  }
+}

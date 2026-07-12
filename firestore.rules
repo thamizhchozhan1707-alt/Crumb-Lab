@@ -1,0 +1,131 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper: Verify user is authenticated
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Helper: Validate document ID format to prevent path poisoning or giant keys
+    function isValidId(id) {
+      return id is string && id.matches('^[a-zA-Z0-9_\\-]+$') && id.size() <= 100;
+    }
+
+    // Helper: Enforce maximum string and array sizes to avoid wallet exhaustion
+    function isValidString(val, minSize, maxSize) {
+      return val is string && val.size() >= minSize && val.size() <= maxSize;
+    }
+
+    // Validate Ingredient schema
+    function isValidIngredient(data) {
+      return data.keys().hasAll(['id', 'name', 'category', 'stock', 'unit', 'unitCost', 'supplier', 'minStock', 'updatedAt'])
+        && data.keys().size() == 9
+        && isValidId(data.id)
+        && isValidString(data.name, 1, 150)
+        && isValidString(data.category, 1, 100)
+        && data.stock is number
+        && isValidString(data.unit, 1, 20)
+        && data.unitCost is number
+        && isValidString(data.supplier, 1, 150)
+        && data.minStock is number
+        && isValidString(data.updatedAt, 1, 50);
+    }
+
+    // Validate Recipe schema
+    function isValidRecipe(data) {
+      return data.keys().hasAll(['id', 'name', 'version', 'category', 'ingredients', 'instructions', 'tempF', 'timeMins', 'textureAnalysis', 'tasteRating', 'costPerCookie', 'notes', 'createdAt', 'updatedAt', 'updatedBy'])
+        && data.keys().size() >= 15
+        && isValidId(data.id)
+        && isValidString(data.name, 1, 150)
+        && data.version is number
+        && isValidString(data.category, 1, 100)
+        && data.ingredients is list
+        && isValidString(data.instructions, 1, 5000)
+        && data.tempF is number
+        && data.timeMins is number
+        && isValidString(data.textureAnalysis, 1, 1000)
+        && data.tasteRating is number
+        && data.costPerCookie is number
+        && isValidString(data.notes, 0, 5000)
+        && isValidString(data.createdAt, 1, 50)
+        && isValidString(data.updatedAt, 1, 50)
+        && isValidString(data.updatedBy, 1, 150);
+    }
+
+    // Validate Experiment schema
+    function isValidExperiment(data) {
+      return data.keys().hasAll(['id', 'recipeId', 'recipeName', 'title', 'date', 'variablesChanged', 'bakingTemp', 'bakingTime', 'observations', 'textureRating', 'tasteRating', 'costPerCookie', 'status', 'createdBy'])
+        && data.keys().size() >= 14
+        && isValidId(data.id)
+        && isValidId(data.recipeId)
+        && isValidString(data.recipeName, 1, 150)
+        && isValidString(data.title, 1, 200)
+        && isValidString(data.date, 1, 30)
+        && isValidString(data.variablesChanged, 1, 1000)
+        && data.bakingTemp is number
+        && data.bakingTime is number
+        && isValidString(data.observations, 1, 5000)
+        && data.textureRating is number
+        && data.tasteRating is number
+        && data.costPerCookie is number
+        && isValidString(data.status, 1, 50)
+        && isValidString(data.createdBy, 1, 150);
+    }
+
+    // Validate InventoryLog schema
+    function isValidInventoryLog(data) {
+      return data.keys().hasAll(['id', 'ingredientId', 'ingredientName', 'changeAmount', 'actionType', 'timestamp', 'performedBy'])
+        && data.keys().size() >= 7
+        && isValidId(data.id)
+        && isValidId(data.ingredientId)
+        && isValidString(data.ingredientName, 1, 150)
+        && data.changeAmount is number
+        && isValidString(data.actionType, 1, 50)
+        && isValidString(data.timestamp, 1, 50)
+        && isValidString(data.performedBy, 1, 150);
+    }
+
+    // Validate User schema
+    function isValidUser(data) {
+      return data.keys().hasAll(['id', 'email', 'role', 'displayName', 'createdAt'])
+        && data.keys().size() == 5
+        && isValidId(data.id)
+        && isValidString(data.email, 3, 150)
+        && isValidString(data.role, 1, 50)
+        && isValidString(data.displayName, 1, 150)
+        && isValidString(data.createdAt, 1, 50);
+    }
+
+    // Collection matching & route-specific security blocks
+    match /ingredients/{ingredientId} {
+      allow read: if isSignedIn();
+      allow create, update: if isSignedIn() && isValidId(ingredientId) && isValidIngredient(request.resource.data);
+      allow delete: if isSignedIn() && isValidId(ingredientId);
+    }
+
+    match /recipes/{recipeId} {
+      allow read: if isSignedIn();
+      allow create, update: if isSignedIn() && isValidId(recipeId) && isValidRecipe(request.resource.data);
+      allow delete: if isSignedIn() && isValidId(recipeId);
+    }
+
+    match /experiments/{experimentId} {
+      allow read: if isSignedIn();
+      allow create, update: if isSignedIn() && isValidId(experimentId) && isValidExperiment(request.resource.data);
+      allow delete: if isSignedIn() && isValidId(experimentId);
+    }
+
+    match /inventory/{logId} {
+      allow read: if isSignedIn();
+      allow create, update: if isSignedIn() && isValidId(logId) && isValidInventoryLog(request.resource.data);
+      allow delete: if isSignedIn() && isValidId(logId);
+    }
+
+    match /users/{userId} {
+      allow read: if isSignedIn() && (request.auth.uid == userId || resource.data.email == request.auth.token.email);
+      allow create, update: if isSignedIn() && request.auth.uid == userId && isValidId(userId) && isValidUser(request.resource.data);
+      allow delete: if isSignedIn() && request.auth.uid == userId;
+    }
+  }
+}
